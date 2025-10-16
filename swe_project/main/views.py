@@ -5,3 +5,7 @@ from django.http import HttpResponse
 
 def home(request):
     return HttpResponse("Привет, Django!")
+
+
+def getItems():
+    return 10
