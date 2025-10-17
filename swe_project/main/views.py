@@ -1,11 +1,12 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from rest_framework import viewsets
+from .models import Item, Request
+from .serializers import ItemSerializer, RequestSerializer
 
-# Create your views here.
+# ViewSets for CRUD
+class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
 
-def home(request):
-    return HttpResponse("Привет, Django!")
-
-
-def getItems():
-    return 10
+class RequestViewSet(viewsets.ModelViewSet):
+    queryset = Request.objects.all()
+    serializer_class = RequestSerializer
