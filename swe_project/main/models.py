@@ -1,5 +1,12 @@
 from django.db import models
 
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Item(models.Model):
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=500)
@@ -7,9 +14,16 @@ class Item(models.Model):
     weight = models.FloatField()
     quantity = models.IntegerField()
     supplierID = models.IntegerField()
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.name
+
 
 
 class Request(models.Model):
