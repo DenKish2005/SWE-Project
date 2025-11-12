@@ -13,11 +13,20 @@ class Item(models.Model):
 
 
 class Request(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "Pending", "Pending"
+        APPROVED = "Approved", "Approved"
+        REJECTED = "Rejected", "Rejected"
+
     consumerID = models.IntegerField()
     supplierID = models.IntegerField()
-    status = models.CharField(max_length=50)
+    status = models.CharField(
+        max_length=50,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
     requestDate = models.DateField(auto_now_add=True)
-    consumerComment = models.TextField()
+    consumerComment = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.consumerID} → {self.supplierID} ({self.status})"
