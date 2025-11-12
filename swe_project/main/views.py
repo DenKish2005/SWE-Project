@@ -1,11 +1,15 @@
 from rest_framework import viewsets
 from rest_framework import filters
-from .models import Item, Request
-from .serializers import ItemSerializer, RequestSerializer
+from .models import Item, Request, Category
+from .serializers import ItemSerializer, RequestSerializer, CategorySerializer
+from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-# ViewSets for CRUD
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
@@ -30,3 +34,4 @@ class RequestViewSet(viewsets.ModelViewSet):
         req.status = "Rejected"
         req.save()
         return Response({"message": "Request rejected."})
+
