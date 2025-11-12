@@ -17,6 +17,17 @@ class ItemViewSet(viewsets.ModelViewSet):
     ordering_fields = ['price', 'weight']
     search_fields = ['name', 'description']
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        category_id = self.request.query_params.get('category')
+        supplier_id = self.request.query_params.get('supplier')
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+        if supplier_id:
+            qs = qs.filter(supplierID=supplier_id)
+        return qs
+
+
 class RequestViewSet(viewsets.ModelViewSet):
     queryset = Request.objects.all()
     serializer_class = RequestSerializer
