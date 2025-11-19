@@ -68,8 +68,6 @@ class Message(models.Model):
 
     def __str__(self): return f"{self.senderType}: {self.text[:30]}"
 
-
-
 class UserProfile(models.Model):
     class Role(models.TextChoices):
         CONSUMER = "consumer", "Consumer"
