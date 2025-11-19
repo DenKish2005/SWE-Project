@@ -91,3 +91,25 @@ class SupplierStaff(models.Model):
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name="staff")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=UserProfile.Role.choices)
+
+class SupplierConsumerLink(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "Pending", "Pending"
+        APPROVED = "Approved", "Approved"
+        REJECTED = "Rejected", "Rejected"
+
+    consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE, db_index=True)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, db_index=True)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING, db_index=True)
+    requested_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True)
+    rejected_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['consumer', 'supplier', 'status'],
+                name='uniq_active_link',
+                condition=Q(status__in=['Pending', 'Approved'])
+            ),
+        ]
