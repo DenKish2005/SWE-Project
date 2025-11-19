@@ -141,3 +141,19 @@ class OrderItem(models.Model):
     discount = models.DecimalField(max_digits=6, decimal_places=2, default=0)  # %
     line_total = models.DecimalField(max_digits=12, decimal_places=2)
 
+class Incident(models.Model):
+    class Status(models.TextChoices):
+        OPEN = "Open", "Open"
+        RESOLVED = "Resolved", "Resolved"
+        ESCALATED = "Escalated", "Escalated"
+        CLOSED = "Closed", "Closed"
+
+    order = models.ForeignKey(Order, null=True, blank=True, on_delete=models.SET_NULL)
+    consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN)
+    priority = models.CharField(max_length=20, default="normal")
+    description = models.TextField()
+    resolution = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
