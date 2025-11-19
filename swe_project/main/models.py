@@ -105,17 +105,6 @@ class Request(models.Model):
     def __str__(self):
         return f"{self.consumerID} → {self.supplierID} ({self.status})"
 
-class Message(models.Model):
-    link = models.ForeignKey(SupplierConsumerLink, on_delete=models.CASCADE, db_index=True)
-    senderType = models.CharField(max_length=20) 
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        indexes = [models.Index(fields=['request', 'created_at'])]
-
-    def __str__(self): return f"{self.senderType}: {self.text[:30]}"
-
 class Order(models.Model):
     class Status(models.TextChoices):
         DRAFT = "Draft", "Draft"
@@ -132,13 +121,25 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class Message(models.Model):
+    order = models.ForeignKey(Order, null=True, blank=True, on_delete=models.SET_NULL)
+    link = models.ForeignKey(SupplierConsumerLink, on_delete=models.CASCADE, db_index=True)
+    senderType = models.CharField(max_length=20) 
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [models.Index(fields=['request', 'created_at'])]
+
+    def __str__(self): return f"{self.senderType}: {self.text[:30]}"
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     product = models.ForeignKey(Item, on_delete=models.PROTECT)
     name_snapshot = models.CharField(max_length=255)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     quantity = models.PositiveIntegerField()
-    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0)  # %
+    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     line_total = models.DecimalField(max_digits=12, decimal_places=2)
 
 class Incident(models.Model):
