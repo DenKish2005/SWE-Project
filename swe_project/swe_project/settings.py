@@ -139,3 +139,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+INSTALLED_APPS += ["drf_spectacular", "drf_spectacularSidecar"]
+
+REST_FRAMEWORK.update({
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+})
+SPECTACULAR_SETTINGS = {
+    "TITLE": "SWE Project API",
+    "VERSION": "1.0.0",
+}
