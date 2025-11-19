@@ -116,3 +116,28 @@ class Message(models.Model):
 
     def __str__(self): return f"{self.senderType}: {self.text[:30]}"
 
+class Order(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = "Draft", "Draft"
+        SUBMITTED = "Submitted", "Submitted"
+        ACCEPTED = "Accepted", "Accepted"
+        REJECTED = "Rejected", "Rejected"
+        COMPLETED = "Completed", "Completed"
+
+    consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
+    link = models.ForeignKey(SupplierConsumerLink, on_delete=models.PROTECT)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.SUBMITTED, db_index=True)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    product = models.ForeignKey(Item, on_delete=models.PROTECT)
+    name_snapshot = models.CharField(max_length=255)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
+    quantity = models.PositiveIntegerField()
+    discount = models.DecimalField(max_digits=6, decimal_places=2, default=0)  # %
+    line_total = models.DecimalField(max_digits=12, decimal_places=2)
+

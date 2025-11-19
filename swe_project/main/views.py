@@ -46,6 +46,7 @@ class ItemViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     ordering_fields = ['price', 'weight']
     search_fields = ['name', 'description']
+    permission_classes = [IsAuthenticatedOrReadOnlyWrite]
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -71,6 +72,11 @@ class ItemViewSet(viewsets.ModelViewSet):
         )
         suppliers = [row['supplierID'] for row in items]
         return Response({"suppliers": suppliers})
+    
+    
+    def perform_create(self, serializer):
+        serializer.save()
+
 
 
 class RequestViewSet(viewsets.ModelViewSet):
