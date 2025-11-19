@@ -157,3 +157,14 @@ class Incident(models.Model):
     resolution = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class Notification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    context = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    read_at = models.DateTimeField(null=True, blank=True)
+
+    @staticmethod
+    def create_for_order(order, title):
+        Notification.objects.create(user=order.consumer.user, title=title, context={"order_id": order.id})
