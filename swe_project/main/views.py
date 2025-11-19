@@ -5,6 +5,13 @@ from .serializers import ItemSerializer, RequestSerializer, CategorySerializer, 
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from .permissions import IsChatAllowed
+from rest_framework import permissions
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all().order_by('created_at')
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.AllowAny, IsChatAllowed]
 
 
 class MessageViewSet(viewsets.ModelViewSet):
