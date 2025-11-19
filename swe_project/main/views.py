@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from .permissions import IsChatAllowed
 from rest_framework import permissions
 
+
+
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all().order_by('created_at')
     serializer_class = MessageSerializer
@@ -99,4 +101,18 @@ class RequestViewSet(viewsets.ModelViewSet):
         req.status = Request.Status.REJECTED
         req.save()
         return Response({"message": "Request rejected."})
+
+class OrderViewSet(ModelViewSet):
+    queryset = Order.objects.all().select_related("consumer","supplier").prefetch_related("items")
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        order = self.get_object()
+        self.check_object_permissions(request, order)
+        order.status = Order.Status.ACCEPTED
+        order.save(update_fields=["status"])
+        Notification.create_for_order(order, "Order accepted")
+        return Response({"status": order.status})
 
