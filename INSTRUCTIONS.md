@@ -1,3 +1,46 @@
+┌────────────────────────────────────────────┐
+│   ENDPOINTS — SHORT CONSOLE DESCRIPTION    │
+└────────────────────────────────────────────┘
+
+# CATEGORIES
+GET     /categories/              — получить список категорий
+POST    /categories/              — создать категорию
+GET     /categories/{id}/         — получить одну категорию
+PATCH   /categories/{id}/         — обновить часть полей
+DELETE  /categories/{id}/         — удалить категорию
+
+
+# ITEMS
+GET     /items/                   — список товаров + поиск + сортировка + фильтры
+POST    /items/                   — создать товар
+GET     /items/{id}/              — детали товара
+PATCH   /items/{id}/              — обновить товар
+DELETE  /items/{id}/              — удалить товар
+
+GET     /items/suppliers-by-name/?name=...  
+        — получить список supplierID, которые продают товар по названию
+
+
+# FRIEND REQUESTS (Consumer → Supplier)
+GET     /requests/                — все запросы
+POST    /requests/                — создать запрос (статус = Pending)
+GET     /requests/{id}/           — детали запроса
+PATCH   /requests/{id}/           — обновить (например, комментарий)
+DELETE  /requests/{id}/           — удалить запрос
+
+POST    /requests/{id}/approve/   — одобрить (status → Approved)
+POST    /requests/{id}/reject/    — отклонить (status → Rejected)
+
+
+# CHAT (доступно только если request = Approved)
+GET     /messages/                — список сообщений (можно ?request=id)
+POST    /messages/                — отправить сообщение
+GET     /messages/{id}/           — получить одно сообщение
+PATCH   /messages/{id}/           — изменить текст
+DELETE  /messages/{id}/           — удалить сообщение
+
+
+
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ SUPPLIER–CONSUMER BACKEND — HOW TO USE (console guide for humans)            │
 │ Stack: Django 5 + Django REST Framework + PostgreSQL + Docker                │
