@@ -20,6 +20,14 @@ class Item(models.Model):
 
     def __str__(self): return self.name
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['supplierID', 'name'],
+                name='uniq_supplier_itemname'
+            ),
+        ]
+
 class Request(models.Model):
     class Status(models.TextChoices):
         PENDING = "Pending", "Pending"
