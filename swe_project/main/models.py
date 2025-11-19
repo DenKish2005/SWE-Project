@@ -1,6 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Q
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -66,3 +67,29 @@ class Message(models.Model):
         indexes = [models.Index(fields=['request', 'created_at'])]
 
     def __str__(self): return f"{self.senderType}: {self.text[:30]}"
+
+
+
+class UserProfile(models.Model):
+    class Role(models.TextChoices):
+        CONSUMER = "consumer", "Consumer"
+        SUPPLIER_OWNER = "owner", "Owner"
+        SUPPLIER_MANAGER = "manager", "Manager"
+        SALES = "sales", "Sales"
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=Role.choices)
+
+class Supplier(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # владелец
+    company_name = models.CharField(max_length=255)
+    city = models.CharField(max_length=100, blank=True)
+
+class Consumer(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    business_name = models.CharField(max_length=255, blank=True)
+
+class SupplierStaff(models.Model):
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name="staff")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=UserProfile.Role.choices)
