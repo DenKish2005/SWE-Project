@@ -149,3 +149,10 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "SWE Project API",
     "VERSION": "1.0.0",
 }
+
+REST_FRAMEWORK.update({
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+})
