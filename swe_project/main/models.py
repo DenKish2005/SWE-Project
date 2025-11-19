@@ -58,8 +58,8 @@ class Request(models.Model):
         return f"{self.consumerID} → {self.supplierID} ({self.status})"
 
 class Message(models.Model):
-    request = models.ForeignKey(Request, on_delete=models.CASCADE, db_index=True)
-    senderType = models.CharField(max_length=20)
+    link = models.ForeignKey(SupplierConsumerLink, on_delete=models.CASCADE, db_index=True)
+    senderType = models.CharField(max_length=20) 
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
