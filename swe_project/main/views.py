@@ -12,11 +12,8 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all().order_by('created_at')
     serializer_class = MessageSerializer
     permission_classes = [permissions.AllowAny, IsChatAllowed]
-
-
-class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all().order_by('created_at')
-    serializer_class = MessageSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering = ['created_at']
 
     def create(self, request, *args, **kwargs):
         request_id = request.data.get("request")
@@ -26,19 +23,15 @@ class MessageViewSet(viewsets.ModelViewSet):
             req = Request.objects.get(id=request_id)
         except Request.DoesNotExist:
             return Response({"error": "Request not found"}, status=404)
-
         if req.status != Request.Status.APPROVED:
-            return Response(
-                {"error": "Chat allowed only for Approved requests"},
-                status=400,
-            )
+            return Response({"error": "Chat allowed only for Approved requests"}, status=400)
         return super().create(request, *args, **kwargs)
-    
+
     def get_queryset(self):
         qs = super().get_queryset()
-        request_id = self.request.query_params.get('request')
-        if request_id:
-            qs = qs.filter(request_id=request_id)
+        rid = self.request.query_params.get('request')
+        if rid:
+            qs = qs.filter(request_id=rid)
         return qs
 
 
