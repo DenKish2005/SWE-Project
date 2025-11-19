@@ -156,3 +156,9 @@ REST_FRAMEWORK.update({
         "rest_framework.throttling.UserRateThrottle",
     ],
 })
+
+REST_FRAMEWORK.update({
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+})
