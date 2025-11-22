@@ -140,7 +140,12 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-INSTALLED_APPS += ["drf_spectacular", "drf_spectacular_sidecar"]
+INSTALLED_APPS += [
+    "corsheaders",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
+]
+
 
 REST_FRAMEWORK.update({
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
@@ -178,7 +183,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 DEBUG = os.getenv("DEBUG", "1") == "1"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",") if not DEBUG else ["*"]
 
-INSTALLED_APPS += ["corsheaders", "drf_spectacular", "drf_spectacular_sidecar"]
+
 MIDDLEWARE = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE
 CORS_ALLOW_ALL_ORIGINS = True  # на проде - ограничить
 
