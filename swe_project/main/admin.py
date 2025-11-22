@@ -21,4 +21,5 @@ class MessageAdmin(admin.ModelAdmin):
 class AttachmentAdmin(admin.ModelAdmin):
     list_display = ("id", "message", "mime_type", "size", "created_at")
 
-admin.site.register((Supplier, Consumer, SupplierStaff, SupplierConsumerLink, Order, OrderItem, Incident, Notification, SupplierKYB))
+admin.site.register((Supplier, Consumer, SupplierStaff, SupplierConsumerLink, 
+                     Order, OrderItem, Incident, Notification, SupplierKYB))
