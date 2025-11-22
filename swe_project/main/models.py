@@ -25,16 +25,6 @@ class Item(models.Model):
         return self.name
 
 
-class Message(models.Model):
-    request = models.ForeignKey(Request, on_delete=models.CASCADE)
-    senderType = models.CharField(max_length=20)  # 'consumer' or 'supplier'
-    text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.senderType}: {self.text[:30]}"
-
-
 class Request(models.Model):
     class Status(models.TextChoices):
         PENDING = "Pending", "Pending"
@@ -53,3 +43,13 @@ class Request(models.Model):
 
     def __str__(self):
         return f"{self.consumerID} → {self.supplierID} ({self.status})"
+
+
+class Message(models.Model):
+    request = models.ForeignKey(Request, on_delete=models.CASCADE)
+    senderType = models.CharField(max_length=20)  # 'consumer' or 'supplier'
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.senderType}: {self.text[:30]}"

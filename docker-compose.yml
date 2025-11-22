@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: swe_user
       POSTGRES_PASSWORD: StrongPassword123!
     ports:
-      - "5432:5432"
+      - "8001:8001"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -20,6 +20,7 @@ services:
     command: >
       sh -c "python swe_project/manage.py makemigrations &&
              python swe_project/manage.py migrate &&
+             python swe_project/manage.py seed_db &&
              python swe_project/manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
