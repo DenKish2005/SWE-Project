@@ -1,6 +1,45 @@
 from django.test import TestCase
-from rest_framework.test import APIClient
+from django.contrib.auth.models import User
+from rest_framework.test import APIClient, APITestCase
 from .models import Category, Item, Request as Link
+from .models import Supplier, Consumer, SupplierConsumerLink, Item, Category
+
+class VisibilityTests(APITestCase):
+    def setUp(self):
+        self.cat = Category.objects.create(name="Food")
+        self.supp_user = User.objects.create_user(username="supp", password="p")
+        self.cons_user = User.objects.create_user(username="cons", password="p")
+        self.supplier = Supplier.objects.create(user=self.supp_user, company_name="Acme")
+        self.consumer = Consumer.objects.create(user=self.cons_user, business_name="Cafe")
+        self.item = Item.objects.create(supplier=self.supplier, name="Sugar", description="1kg",
+                                        price="100.00", weight="1.000", quantity=10, category=self.cat)
+
+        self.client_cons = APIClient(); self.client_cons.login(username="cons", password="p")
+        self.client_supp = APIClient(); self.client_supp.login(username="supp", password="p")
+
+    def test_consumer_sees_items_only_after_approval(self):
+        
+        r = self.client_cons.get("/api/items/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()["count"], 0)
+
+        
+        link = SupplierConsumerLink.objects.create(consumer=self.consumer, supplier=self.supplier)
+        r = self.client_cons.get("/api/items/")
+        self.assertEqual(r.json()["count"], 0)
+
+        
+        link.status = SupplierConsumerLink.Status.APPROVED
+        link.save()
+        r = self.client_cons.get("/api/items/")
+        self.assertEqual(r.json()["count"], 1)
+
+    def test_supplier_staff_sees_own_items(self):
+        r = self.client_supp.get("/api/items/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()["count"], 1)
+
+
 
 class APISmokeTests(TestCase):
     def setUp(self):
