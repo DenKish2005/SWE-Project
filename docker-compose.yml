@@ -13,6 +13,13 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U swe_user -d swe_project_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
 
   web:
     build: .
@@ -20,14 +27,16 @@ services:
     command: >
       sh -c "python swe_project/manage.py migrate --noinput &&
              python swe_project/manage.py runserver 0.0.0.0:8000"
-
     volumes:
       - .:/code
       - media_data:/code/media
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: always
+
 
 volumes:
   postgres_data:
