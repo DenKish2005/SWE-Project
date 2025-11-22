@@ -20,6 +20,10 @@ from .permissions import (
     IsSalesOfSupplier, IsPlatformAdmin
 )
 
+from django.utils import timezone
+from rest_framework.exceptions import PermissionDenied
+from .serializers import SupplierKYBSerializer
+
 # ---- helpers ----
 def my_suppliers_qs(user):
     if not user.is_authenticated:
@@ -80,17 +84,16 @@ class ItemViewSet(viewsets.ModelViewSet):
         if supplier_id: qs = qs.filter(supplier_id=supplier_id)
         if is_available is not None: qs = qs.filter(is_available=is_available.lower()=="true")
         return qs
-
+    
     def perform_create(self, serializer):
         supplier = serializer.validated_data.get("supplier")
         if supplier not in list(my_suppliers_qs(self.request.user)):
-            raise permissions.PermissionDenied("You can create items only for your supplier.")
+            raise PermissionDenied("You can create items only for your supplier.")
         serializer.save()
 
     def perform_update(self, serializer):
-        instance = self.get_object()
-        if instance.supplier not in list(my_suppliers_qs(self.request.user)):
-            raise permissions.PermissionDenied("Forbidden")
+        if self.get_object().supplier not in list(my_suppliers_qs(self.request.user)):
+            raise PermissionDenied("Forbidden")
         serializer.save()
 
 # ---- Supplier/Consumer/Staff ----
