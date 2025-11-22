@@ -306,9 +306,14 @@ class IncidentViewSet(viewsets.ModelViewSet):
         inc.status = Incident.Status.RESOLVED
         inc.resolved_at = timezone.now()
         inc.resolution = request.data.get("resolution", inc.resolution)
-        inc.save(update_fields=["status", "resolved_at", "resolution"])
+        inc.save(update_fields=["status","resolved_at","resolution"])
+
+        link = inc.order.link if inc.order_id else SupplierConsumerLink.objects.filter(
+            consumer=inc.consumer, supplier=inc.supplier, status=SupplierConsumerLink.Status.APPROVED
+        ).first()
+        if link:
+            system_chat(link, "Incident resolved")
         notify(inc.consumer.user, Notification.Type.INCIDENT, "Incident resolved", ctx={"incident_id": inc.id})
-        system_chat(SupplierConsumerLink.objects.get(pk=inc.link_id) if hasattr(inc, "link_id") else inc.order.link, "Incident resolved")
         return Response({"status": inc.status})
 
     @action(detail=True, methods=["post"])
@@ -316,7 +321,11 @@ class IncidentViewSet(viewsets.ModelViewSet):
         inc = self.get_object()
         inc.status = Incident.Status.ESCALATED
         inc.save(update_fields=["status"])
-        
+        link = inc.order.link if inc.order_id else SupplierConsumerLink.objects.filter(
+            consumer=inc.consumer, supplier=inc.supplier, status=SupplierConsumerLink.Status.APPROVED
+        ).first()
+        if link:
+            system_chat(link, "Incident escalated")
         notify(inc.consumer.user, Notification.Type.INCIDENT, "Incident escalated", ctx={"incident_id": inc.id})
         return Response({"status": inc.status})
 
@@ -350,9 +359,6 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
 # ---- Platform Admin (опционально) ----
 class KYBViewSet(viewsets.ModelViewSet):
     queryset = SupplierKYB.objects.all()
-    serializer_class = serializers.ModelSerializer 
+    serializer_class = SupplierKYBSerializer
     permission_classes = [IsPlatformAdmin]
-    class serializer_class(serializers.ModelSerializer):
-        class Meta:
-            model = SupplierKYB
-            fields = "__all__"
+
