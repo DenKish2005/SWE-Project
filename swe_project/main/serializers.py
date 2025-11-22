@@ -4,6 +4,11 @@ from .models import (
     Order, OrderItem, Incident, Notification, Message, Attachment
 )
 
+class SupplierKYBSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SupplierKYB
+        fields = "__all__"
+
 # ---- Category / Item ----
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,17 +49,18 @@ class OrderItemSerializer(serializers.ModelSerializer):
         read_only_fields = ("subtotal",)
 
 class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True)
+    items = OrderItemSerializer(many=True, required=False)
+
     class Meta:
         model = Order
         fields = "__all__"
-        read_only_fields = ("order_number", "total_amount", "accepted_at", "completed_at")
+        read_only_fields = ("order_number","total_amount","accepted_at","completed_at")
 
     def validate(self, data):
         link = data["link"]
-        if link.status != link.Status.APPROVED:
+        if link.status != SupplierConsumerLink.Status.APPROVED:
             raise serializers.ValidationError("Link must be APPROVED.")
-        if data["consumer_id"] != link.consumer_id or data["supplier_id"] != link.supplier_id:
+        if data["consumer"].id != link.consumer_id or data["supplier"].id != link.supplier_id:
             raise serializers.ValidationError("Order consumer/supplier must match link parties.")
         return data
 
@@ -64,7 +70,6 @@ class OrderSerializer(serializers.ModelSerializer):
             order = Order.objects.create(**validated)
             for it in items_data:
                 product = it["product"]
-                
                 if product.supplier_id != order.supplier_id:
                     raise serializers.ValidationError("Product does not belong to supplier.")
                 if it["quantity"] < product.min_order_qty:
@@ -76,7 +81,7 @@ class OrderSerializer(serializers.ModelSerializer):
                     unit_price=product.price,
                     quantity=it["quantity"],
                     discount=it.get("discount", 0),
-                    subtotal=0, 
+                    subtotal=0,
                 )
             order.refresh_from_db()
             order.recalc_total()
@@ -106,3 +111,4 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = "__all__"
+
