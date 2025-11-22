@@ -104,7 +104,13 @@ class SupplierConsumerLink(models.Model):
 
 
 class Item(models.Model):
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name="items", db_index=True)
+    supplier = models.ForeignKey(
+    Supplier,
+    on_delete=models.CASCADE,
+    related_name="items",
+    db_index=True,
+    null=True
+)
     name = models.CharField(max_length=255, db_index=True)
     description = models.CharField(max_length=500, blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
