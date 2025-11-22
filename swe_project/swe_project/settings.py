@@ -108,6 +108,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "60/min",     
+        "user": "120/min",    
+    },
+    "EXCEPTION_HANDLER": "main.errors.custom_exception_handler",
+}
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -130,3 +143,48 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+INSTALLED_APPS += ["drf_spectacular", "drf_spectacularSidecar"]
+
+REST_FRAMEWORK.update({
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+})
+SPECTACULAR_SETTINGS = {
+    "TITLE": "SWE Project API",
+    "VERSION": "1.0.0",
+}
+
+REST_FRAMEWORK.update({
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+})
+
+REST_FRAMEWORK.update({
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+})
+
+REST_FRAMEWORK.update({
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly"
+    ],
+})
+
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()
+
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
+DEBUG = os.getenv("DEBUG", "1") == "1"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",") if not DEBUG else ["*"]
+
+INSTALLED_APPS += ["corsheaders", "drf_spectacular", "drf_spectacular_sidecar"]
+MIDDLEWARE = ["corsheaders.middleware.CorsMiddleware"] + MIDDLEWARE
+CORS_ALLOW_ALL_ORIGINS = True  # на проде - ограничить
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

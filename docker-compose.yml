@@ -24,6 +24,7 @@ services:
              python swe_project/manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
+      - media_data:/code/media
     ports:
       - "8000:8000"
     depends_on:
@@ -31,3 +32,4 @@ services:
 
 volumes:
   postgres_data:
+  media_data:
