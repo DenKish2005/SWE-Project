@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   db:
     image: postgres:16
@@ -16,29 +18,9 @@ services:
     build: .
     container_name: django_web
     command: >
-      sh -c "
-      python - <<'PY'
-import time, psycopg2
-for i in range(30):
-    try:
-        psycopg2.connect(
-            dbname='swe_project_db',
-            user='swe_user',
-            password='StrongPassword123!',
-            host='db',
-            port=5432
-        ).close()
-        print('DB is ready')
-        break
-    except Exception as e:
-        print('Waiting for DB...', e)
-        time.sleep(2)
-else:
-    raise SystemExit('DB not ready in time')
-PY
-      python swe_project/manage.py migrate --noinput &&
-      python swe_project/manage.py runserver 0.0.0.0:8000
-      "
+      sh -c "python swe_project/manage.py migrate --noinput &&
+             python swe_project/manage.py runserver 0.0.0.0:8000"
+
     volumes:
       - .:/code
       - media_data:/code/media
