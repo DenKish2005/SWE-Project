@@ -44,17 +44,3 @@ class IsLinkParticipant(BasePermission):
         if link.status != SupplierConsumerLink.Status.APPROVED:
             return False
         return self._is_participant(request.user, link)
-
-class IsChatAllowed(BasePermission):
-
-    def has_permission(self, request, view):
-        if view.action != "create":
-            return True
-        req_id = request.data.get("request")
-        if not req_id:
-            return False
-        try:
-            link = Link.objects.get(id=req_id)
-        except Link.DoesNotExist:
-            return False
-        return link.status == Link.Status.APPROVED
