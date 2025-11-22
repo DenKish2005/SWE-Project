@@ -344,6 +344,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
 
 # ---- Notifications ----
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
