@@ -122,14 +122,14 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class Message(models.Model):
-    order = models.ForeignKey(Order, null=True, blank=True, on_delete=models.SET_NULL)
-    link = models.ForeignKey(SupplierConsumerLink, on_delete=models.CASCADE, db_index=True)
+    order = models.ForeignKey('Order', null=True, blank=True, on_delete=models.SET_NULL)
+    link = models.ForeignKey('SupplierConsumerLink', on_delete=models.CASCADE, db_index=True)
     senderType = models.CharField(max_length=20) 
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        indexes = [models.Index(fields=['request', 'created_at'])]
+        indexes = [models.Index(fields=['link', 'created_at'])]
 
     def __str__(self): return f"{self.senderType}: {self.text[:30]}"
 
