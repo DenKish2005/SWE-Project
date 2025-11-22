@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Supplier, Consumer, SupplierStaff, SupplierConsumerLink, Category, Item,
-    Order, OrderItem, Incident, Notification, Message, Attachment
+    Order, OrderItem, Incident, Notification, Message, Attachment, SupplierKYB
 )
 
 class SupplierKYBSerializer(serializers.ModelSerializer):
