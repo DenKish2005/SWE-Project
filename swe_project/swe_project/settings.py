@@ -140,7 +140,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-INSTALLED_APPS += ["drf_spectacular", "drf_spectacularSidecar"]
+INSTALLED_APPS += ["drf_spectacular", "drf_spectacular_sidecar"]
 
 REST_FRAMEWORK.update({
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
