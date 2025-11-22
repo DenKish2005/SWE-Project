@@ -18,9 +18,9 @@ services:
     build: .
     container_name: django_web
     command: >
-      sh -c "python swe_project/manage.py makemigrations &&
-             python swe_project/manage.py migrate &&
+      sh -c "python swe_project/manage.py migrate --noinput &&
              python swe_project/manage.py runserver 0.0.0.0:8000"
+
     volumes:
       - .:/code
       - media_data:/code/media

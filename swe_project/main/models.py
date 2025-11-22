@@ -142,7 +142,7 @@ class Order(models.Model):
         DELIVERY = "delivery", "Delivery"
 
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
-    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
     link = models.ForeignKey(SupplierConsumerLink, on_delete=models.PROTECT)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SUBMITTED, db_index=True)
 

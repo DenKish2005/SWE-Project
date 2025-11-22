@@ -3,6 +3,7 @@ from .models import (
     Supplier, Consumer, SupplierStaff, SupplierConsumerLink, Category, Item,
     Order, OrderItem, Incident, Notification, Message, Attachment, SupplierKYB
 )
+from django.db import transaction
 
 class SupplierKYBSerializer(serializers.ModelSerializer):
     class Meta:
