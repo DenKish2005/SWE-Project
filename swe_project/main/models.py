@@ -118,7 +118,7 @@ class Item(models.Model):
     min_order_qty = models.PositiveIntegerField(default=1)
     stock_level = models.PositiveIntegerField(default=0)
     is_available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now)
 
     class Meta:
         constraints = [
