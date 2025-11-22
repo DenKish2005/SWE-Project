@@ -5,3 +5,4 @@ def audit(user, action, obj, payload=None):
         target_type=obj.__class__.__name__, target_id=str(obj.pk),
         payload=payload or {}
     )
+    
