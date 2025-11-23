@@ -12,7 +12,7 @@ class UserProfile(models.Model):
         SUPPLIER_OWNER = "owner", "Owner"
         SUPPLIER_MANAGER = "manager", "Manager"
         SALES = "sales", "Sales"
-        PLATFORM_ADMIN = "platform_admin", "Platform Admin" 
+        PLATFORM_ADMIN = "platform_admin", "Platform Admin"
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.CharField(max_length=32, choices=Role.choices)
@@ -24,11 +24,11 @@ class UserProfile(models.Model):
 # ---------- Справочники ----------
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True)      
+    description = models.TextField(blank=True)
     parent = models.ForeignKey('self', null=True, blank=True,
-                               on_delete=models.SET_NULL)    
-    is_moderated = models.BooleanField(default=True)    
-    created_at = models.DateTimeField(auto_now_add=True)  
+                               on_delete=models.SET_NULL)
+    is_moderated = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -36,13 +36,13 @@ class Category(models.Model):
 
 # ---------- Сущности домена ----------
 class Supplier(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=255)
     city = models.CharField(max_length=100, blank=True)
-    business_license = models.CharField(max_length=100, blank=True) 
-    address = models.CharField(max_length=255, blank=True)       
-    payment_method = models.CharField(max_length=50, blank=True)    
-    created_at = models.DateTimeField(auto_now_add=True)     
+    business_license = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    payment_method = models.CharField(max_length=50, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.company_name
@@ -57,9 +57,9 @@ class Consumer(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=255, blank=True)
     business_type = models.CharField(max_length=20, choices=BusinessType.choices, default=BusinessType.OTHER)
-    city = models.CharField(max_length=100, blank=True) 
-    address = models.CharField(max_length=255, blank=True) 
-    payment_method = models.CharField(max_length=50, blank=True)  
+    city = models.CharField(max_length=100, blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    payment_method = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.business_name or f"Consumer#{self.pk}"
@@ -79,8 +79,8 @@ class SupplierConsumerLink(models.Model):
         PENDING = "Pending", "Pending"
         APPROVED = "Approved", "Approved"
         REJECTED = "Rejected", "Rejected"
-        BLOCKED = "Blocked", "Blocked"  
-        REMOVED = "Removed", "Removed"  
+        BLOCKED = "Blocked", "Blocked"
+        REMOVED = "Removed", "Removed"
 
     consumer = models.ForeignKey(Consumer, on_delete=models.CASCADE, db_index=True)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, db_index=True)
@@ -91,7 +91,7 @@ class SupplierConsumerLink(models.Model):
 
     class Meta:
         constraints = [
-            
+
             models.UniqueConstraint(
                 fields=["consumer", "supplier", "status"],
                 name="uniq_active_link",
@@ -115,10 +115,10 @@ class Item(models.Model):
     description = models.CharField(max_length=500, blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
     weight = models.DecimalField(max_digits=10, decimal_places=3, validators=[MinValueValidator(0)], default=0)
-    quantity = models.PositiveIntegerField(default=0) 
+    quantity = models.PositiveIntegerField(default=0)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, db_index=True)
 
-    
+
     unit = models.CharField(max_length=20, default="pcs")
     discount_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     min_order_qty = models.PositiveIntegerField(default=1)
@@ -152,14 +152,14 @@ class Order(models.Model):
     link = models.ForeignKey(SupplierConsumerLink, on_delete=models.PROTECT)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SUBMITTED, db_index=True)
 
-    order_number = models.CharField(max_length=32, unique=True, default="", blank=True) 
-    delivery_type = models.CharField(max_length=20, choices=DeliveryType.choices, default=DeliveryType.DELIVERY) 
-    delivery_address = models.TextField(blank=True) 
-    notes = models.TextField(blank=True)   
+    order_number = models.CharField(max_length=32, unique=True, default="", blank=True)
+    delivery_type = models.CharField(max_length=20, choices=DeliveryType.choices, default=DeliveryType.DELIVERY)
+    delivery_address = models.TextField(blank=True)
+    notes = models.TextField(blank=True)
 
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    accepted_at = models.DateTimeField(null=True, blank=True)                  
-    completed_at = models.DateTimeField(null=True, blank=True)          
+    accepted_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -182,8 +182,8 @@ class OrderItem(models.Model):
     name_snapshot = models.CharField(max_length=255)
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     quantity = models.PositiveIntegerField()
-    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)  
-    subtotal = models.DecimalField(max_digits=12, decimal_places=2)     
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2)
 
     def save(self, *args, **kwargs):
         self.subtotal = (self.unit_price * self.quantity) - self.discount
@@ -211,7 +211,7 @@ class Message(models.Model):
         return f"{self.sender_type}: {self.text[:30]}"
 
 
-class Attachment(models.Model): 
+class Attachment(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to="chat_attachments/")
     mime_type = models.CharField(max_length=100, blank=True)
@@ -227,7 +227,7 @@ class Incident(models.Model):
         ESCALATED = "Escalated", "Escalated"
         CLOSED = "Closed", "Closed"
 
-    class Type(models.TextChoices): 
+    class Type(models.TextChoices):
         QUALITY = "quality", "Quality"
         DELIVERY = "delivery", "Delivery"
         BILLING = "billing", "Billing"
@@ -237,7 +237,7 @@ class Incident(models.Model):
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
 
-    type = models.CharField(max_length=20, choices=Type.choices, default=Type.OTHER) 
+    type = models.CharField(max_length=20, choices=Type.choices, default=Type.OTHER)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN)
     priority = models.CharField(max_length=20, default="normal")
     description = models.TextField()
@@ -246,7 +246,7 @@ class Incident(models.Model):
     reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="reported_incidents", null=True)  # NEW
     assigned_to = models.ForeignKey(SupplierStaff, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_incidents") # NEW
     escalated_to = models.ForeignKey(SupplierStaff, on_delete=models.SET_NULL, null=True, blank=True, related_name="escalated_incidents")# NEW
-    resolved_at = models.DateTimeField(null=True, blank=True) 
+    resolved_at = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -261,11 +261,11 @@ class Notification(models.Model):
         CHAT = "chat", "Chat message"
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    type = models.CharField(max_length=20, choices=Type.choices, default=Type.INFO) 
+    type = models.CharField(max_length=20, choices=Type.choices, default=Type.INFO)
     title = models.CharField(max_length=255)
-    link_url = models.CharField(max_length=500, blank=True) 
+    link_url = models.CharField(max_length=500, blank=True)
     context = models.JSONField(default=dict, blank=True)
-    is_read = models.BooleanField(default=False) 
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     read_at = models.DateTimeField(null=True, blank=True)
 
