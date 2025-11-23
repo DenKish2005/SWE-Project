@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, F
 from rest_framework import viewsets, filters, status, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -51,6 +51,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 # ---- Items (видимость завязана на Link) ----
 class ItemViewSet(viewsets.ModelViewSet):
+    queryset = Item.objects.all()
     serializer_class = ItemSerializer
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     ordering_fields = ['price', 'weight', 'created_at']
@@ -190,6 +191,7 @@ class SupplierConsumerLinkViewSet(viewsets.ModelViewSet):
 
 # ---- Chat + Attachments ----
 class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
     serializer_class = MessageSerializer
     permission_classes = [permissions.IsAuthenticated, IsLinkParticipant]
     filter_backends = [filters.OrderingFilter]
@@ -342,6 +344,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
 
 # ---- Notifications ----
 class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 

@@ -104,7 +104,13 @@ class SupplierConsumerLink(models.Model):
 
 
 class Item(models.Model):
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, related_name="items", db_index=True)
+    supplier = models.ForeignKey(
+    Supplier,
+    on_delete=models.CASCADE,
+    related_name="items",
+    db_index=True,
+    null=True
+)
     name = models.CharField(max_length=255, db_index=True)
     description = models.CharField(max_length=500, blank=True)
     price = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
@@ -118,7 +124,7 @@ class Item(models.Model):
     min_order_qty = models.PositiveIntegerField(default=1)
     stock_level = models.PositiveIntegerField(default=0)
     is_available = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         constraints = [
@@ -142,7 +148,7 @@ class Order(models.Model):
         DELIVERY = "delivery", "Delivery"
 
     consumer = models.ForeignKey(Consumer, on_delete=models.PROTECT)
-    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE, null=True, blank=True)
     link = models.ForeignKey(SupplierConsumerLink, on_delete=models.PROTECT)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SUBMITTED, db_index=True)
 

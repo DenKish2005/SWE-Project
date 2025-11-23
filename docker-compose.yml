@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   db:
     image: postgres:16
@@ -13,13 +11,20 @@ services:
       - "8001:8001"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U swe_user -d swe_project_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
 
   web:
     build: .
     container_name: django_web
     command: >
       sh -c "python swe_project/manage.py makemigrations &&
-             python swe_project/manage.py migrate &&
+             python swe_project/manage.py migrate --noinput &&
              python swe_project/manage.py seed_db &&
              python swe_project/manage.py runserver 0.0.0.0:8000"
     volumes:
@@ -28,7 +33,10 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: always
+
 
 volumes:
   postgres_data:
